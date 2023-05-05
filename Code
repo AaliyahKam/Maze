@@ -1,0 +1,58 @@
+import random
+
+# Set the size of the maze
+SIZE = 10
+
+# Create the maze as a 2D array of cells
+maze = [[{'top': True, 'right': True, 'bottom': True, 'left': True} for x in range(SIZE)] for y in range(SIZE)]
+
+# Define a function to carve a path through the maze using the depth-first search algorithm
+def carve_maze(x, y):
+    maze[y][x]['visited'] = True
+    directions = ['top', 'right', 'bottom', 'left']
+    random.shuffle(directions)
+    for direction in directions:
+        if direction == 'top' and y > 0 and not maze[y-1][x]['visited']:
+            maze[y][x]['top'] = False
+            maze[y-1][x]['bottom'] = False
+            carve_maze(x, y-1)
+        elif direction == 'right' and x < SIZE-1 and not maze[y][x+1]['visited']:
+            maze[y][x]['right'] = False
+            maze[y][x+1]['left'] = False
+            carve_maze(x+1, y)
+        elif direction == 'bottom' and y < SIZE-1 and not maze[y+1][x]['visited']:
+            maze[y][x]['bottom'] = False
+            maze[y+1][x]['top'] = False
+            carve_maze(x, y+1)
+        elif direction == 'left' and x > 0 and not maze[y][x-1]['visited']:
+            maze[y][x]['left'] = False
+            maze[y][x-1]['right'] = False
+            carve_maze(x-1, y)
+
+# Call the function to generate the maze
+carve_maze(0, 0)
+
+# Print the maze as ASCII art
+for y in range(SIZE):
+    # Print the top wall of each cell in the first row
+    for x in range(SIZE):
+        if y == 0:
+            print('+---', end='')
+        else:
+            print('+   ', end='')
+    print('+')
+    # Print the left wall and bottom wall of each cell
+    for x in range(SIZE):
+        if maze[y][x]['left']:
+            print('|   ', end='')
+        else:
+            print('    ', end='')
+        if maze[y][x]['bottom']:
+            print('+---', end='')
+        else:
+            print('+   ', end='')
+    print('|')
+# Print the bottom wall of the last row
+for x in range(SIZE):
+    print('+---', end='')
+print('+')
